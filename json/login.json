@@ -1,0 +1,26 @@
+{
+  "GWUDO":[
+    {
+      "UID":1,
+      "RID":2,
+      "GN":"TestGateway",
+      "UEm":"lm0466@my.bristol.ac.uk",
+      "OPF":0,
+      "GMACID":11223344556677
+    }
+  ],
+  "ALMS":[
+
+  ],
+  "USD":{
+    "UID":1,
+    "GMACID":-1,
+    "DRefID":-1
+  },
+  "GDDO":[
+  ],
+  "SSD":{
+    "AKID":42,
+    "AK":"****************"
+  }
+}
