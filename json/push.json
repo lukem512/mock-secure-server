@@ -1,16 +1,24 @@
 {
-  "DataType":0,
-  "Data":{
-    "GDDO":{
-      "GMACID":11223344556677,
-      "GCS":"1",
-      "GN":"TestGateway",
-      "LUT":"2016-05-27T13:43:42.686",
-      "ZNDS":[
-      ]
+  "DataType": 0,
+  "Data": {
+    "GDDO": {
+      "GMACID": 11223344556677,
+      "GCS": "1",
+      "GN": "TestGateway",
+      "LUT": "2016-05-27T13:43:42.686",
+      "ZNDS": [{
+        "ZID": 1,
+        "DDDO": [{
+          "DRefID": 262912,
+          "DPID": 64,
+          "DPDO": [{
+            "DPRefID": 309,
+            "CV": "600",
+            "LUT": "2016-04-20T08:22:08"
+          }]
+        }]
+      }]
     },
-    "ALMS":[
-
-    ]
+    "ALMS": []
   }
 }

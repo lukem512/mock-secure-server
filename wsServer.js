@@ -33,6 +33,32 @@ function isOriginAllowed(origin) {
   }).length >  1);
 };
 
+// Ensure the AKID and signature are present
+// No validity checking is performed
+function isRequestWellFormatted(resourceURL) {
+  if (resourceURL.pathname == '/WebSocket/ConnectWebSocket') {
+    if (!resourceURL.query.accessKeyID) {
+      console.warn('[WS] parameter \'accessKeyID\' was not present in request');
+      return false;
+    }
+
+    if (!resourceURL.query.authorization) {
+      console.warn('[WS] parameter \'authorization\' was not present in request');
+      return false;
+    }
+
+    if (!resourceURL.query.date) {
+      console.warn('[WS] parameter \'date\' was not present in request');
+      return false;
+    }
+
+    return true;
+  }
+
+  console.warn('[WS] request url was incorrect');
+  return false;
+};
+
 wsServer.on('request', function(req) {
 
   // Don't run origin tests in development
@@ -44,6 +70,14 @@ wsServer.on('request', function(req) {
     }
   }
 
+  // Check path and query variables
+  if (!isRequestWellFormatted(req.resourceURL)) {
+    console.log('[WS] Connection from  ' + req.origin + ' is not well-formatted and was rejected');
+    req.reject();
+    return;
+  }
+
+  // Accept the request!
   var connection = req.accept(null, req.origin);
   console.log('[WS] Connection from ' + connection.remoteAddress + ' accepted');
 

@@ -1,4 +1,5 @@
-#!/usr/bin/env node
+"use strict"
+
 var WebSocketClient = require('websocket').client;
 
 var SERVER_WS_PORT = process.env.SERVER_WS_PORT || 5678;
@@ -27,4 +28,11 @@ client.on('connect', function(connection) {
     });
 });
 
-client.connect('ws://localhost:' + SERVER_WS_PORT + '/', null);
+// Spawn the connection
+// The values are not checked, they just need to be present
+let AKID = 'everything';
+let DATE = new Date();
+let SIG = 'xxx';
+
+client.connect('ws://localhost:' + SERVER_WS_PORT +
+  '/WebSocket/ConnectWebSocket?accessKeyID=' + AKID + '&authorization=' + SIG + '&date=' + DATE, null);

@@ -4,6 +4,7 @@
   "description": "Testing server for the Secure system",
   "main": "app.js",
   "scripts": {
+    "start": "node app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,6 +21,8 @@
   },
   "homepage": "https://github.com/lukem512/mock-secure-server",
   "dependencies": {
+    "body-parser": "^1.15.1",
+    "express": "^4.13.4",
     "websocket": "^1.0.23"
   }
 }
