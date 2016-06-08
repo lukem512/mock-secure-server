@@ -9,8 +9,8 @@
       "ZNDS": [{
         "ZID": 1,
         "DDDO": [{
-          "DRefID": 999999,
-          "DPID": 64,
+          "DRefID": 1,
+          "DPID": 1,
           "DPDO": [{
             "DPRefID": 112,
             "CV": "600",
