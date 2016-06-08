@@ -1,43 +1,49 @@
 {
-  "DataType": 0,
-  "Data": {
-    "GWUDO":[
-      {
-        "UID": 1,
-        "RID": 2,
-        "GN": "TestGateway",
-        "UEm": "lm0466@my.bristol.ac.uk",
-        "OPF": 0,
-        "GMACID": 11223344556677
-      }
-    ],
-    "ALMS":[],
-    "USD":{
-      "UID":1,
-      "GMACID":-1,
-      "DRefID":-1
-    },
-    "GDDO": {
-      "GMACID": 11223344556677,
-      "GCS": "1",
-      "GN": "TestGateway",
-      "LUT": "2016-05-27T13:43:42.686",
-      "ZNDS": [{
-        "ZID": 1,
-        "DDDO": [{
-          "DRefID": 262912,
-          "DPID": 64,
-          "DPDO": [{
-            "DPRefID": 309,
-            "CV": "600",
-            "LUT": "2016-04-20T08:22:08"
-          }]
+  "GWUDO":[{
+    "UID": 1,
+    "RID": 2,
+    "GN": "TestGateway",
+    "UEm": "lm0466@my.bristol.ac.uk",
+    "OPF": 0,
+    "GMACID": 11223344556677
+  }],
+  "ALMS":[],
+  "USD":{
+    "UID":1,
+    "GMACID":-1,
+    "DRefID":-1
+  },
+  "GDDO": [{
+    "GMACID": 11223344556677,
+    "GCS": "1",
+    "GN": "TestGateway",
+    "LUT": "2016-05-27T13:43:42.686",
+    "ZNDS": [{
+      "ZID": 1,
+      "DDDO": [{
+        "DRefID": 999999,
+        "DPID": 64,
+        "DPDO": [{
+          "DPRefID": 112,
+          "CV": "600",
+          "LUT": "2016-04-20T08:22:08"
         }]
       }]
-    },
-    "SSD":{
-      "AKID": 42,
-      "AK": "everything"
-    }
+    }]
+  }],
+  "GD": [{
+    "GMACID": 11223344556677,
+    "GSN": "TestSite",
+    "ZNS": [{
+      "ZID": 1,
+      "DVS": [{
+        "DRefID": 999999,
+        "DTID": 8
+      }]
+    }]
+  }],
+  "SSD": {
+    "AKID": 42,
+    "AK": "everything"
   }
 }

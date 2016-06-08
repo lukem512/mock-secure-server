@@ -9,10 +9,10 @@
       "ZNDS": [{
         "ZID": 1,
         "DDDO": [{
-          "DRefID": 262912,
+          "DRefID": 999999,
           "DPID": 64,
           "DPDO": [{
-            "DPRefID": 309,
+            "DPRefID": 112,
             "CV": "600",
             "LUT": "2016-04-20T08:22:08"
           }]

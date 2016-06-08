@@ -6,9 +6,13 @@ var http = require('http');
 var ws = require('websocket');
 var fs = require('fs');
 
+// Configuration variables
 var SERVER_WS_PORT = process.env.SERVER_WS_PORT || 5678;
 var SERVER_MODE = process.env.mode || 'development';
+
 var ORIGIN_WHITELIST = ['localhost'];
+
+var PUSH_NOTIFICATION_INTERVAL = 4000;
 
 // HTTP server for WebSockets
 var httpServer = http.createServer((req, res) => {
@@ -27,10 +31,26 @@ var wsServer = new ws.server({
   autoAcceptConnections: false
 });
 
+// Track connections
+var connections = [];
+
+// Helper functions
 function isOriginAllowed(origin) {
   return (ORIGIN_WHITELIST.filter(function(allowed) {
     return allowed == origin;
   }).length >  1);
+};
+
+function sendPushNotification() {
+  let pushData = fs.readFileSync('json/push.json', 'utf8');
+  let pushObject = JSON.parse(pushData);
+  let pushMessage = JSON.stringify(pushObject);
+
+  connections.forEach(function(destination) {
+    destination.send(pushMessage);
+  });
+
+  setTimeout(sendPushNotification, PUSH_NOTIFICATION_INTERVAL);
 };
 
 // Ensure the AKID and signature are present
@@ -80,13 +100,8 @@ wsServer.on('request', function(req) {
   var connection = req.accept(null, req.origin);
   console.log('[WS] Connection from ' + connection.remoteAddress + ' accepted');
 
-  // Respond to new connections with login data in JSON
-  let loginData = fs.readFileSync('json/login.json', 'utf8');
-  let loginObject = JSON.parse(loginData);
-  connection.send(JSON.stringify(loginObject));
-
-  // Periodically send push updates
-  // TODO
+  // Add to list
+  connections.push(connection);
 
   // Connection events
   connection.on('message', function(msg) {
@@ -105,7 +120,16 @@ wsServer.on('request', function(req) {
 
   connection.on('close', function(reason, description) {
     console.log('[WS] Connection from ' + connection.remoteAddress + ' closed');
+
+    // Remove from list
+    var index = connections.indexOf(connection);
+    if (index !== -1) {
+      connections.splice(index, 1);
+    }
   })
 });
+
+// Periodically send push updates
+setTimeout(sendPushNotification, PUSH_NOTIFICATION_INTERVAL);
 
 module.exports.wsServer = wsServer;

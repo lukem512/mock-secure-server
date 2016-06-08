@@ -2,6 +2,7 @@
 
 // Mock Secure Server
 // Luke Mitchell, 03/06/2016
+var fs = require('fs');
 var express = require('express');
 var bodyParser = require('body-parser');
 
@@ -11,12 +12,9 @@ var SERVER_WS_PORT = process.env.SERVER_WS_PORT || 5678;
 // Authorization keys to use as request responses
 // These are hard-coded as the values are not currently
 // used for testing
-var AUTH_KEY_JSON = {
-  "SSD": {
-    "AKID": 42,
-    "AK": "everything"
-  }
-};
+// Respond to new connections with login data in JSON
+let loginData = fs.readFileSync('json/login.json', 'utf8');
+let loginObject = JSON.parse(loginData);
 
 // Instantiate the Express app
 // and support HTTP request variables
@@ -39,7 +37,7 @@ app.post('/user/login', (req, res) => {
   if (!password || typeof password == 'undefined') { res.status(400).send('Bad Request'); return; }
 
   // Send hard-coded auth. keys
-  res.json(AUTH_KEY_JSON);
+  res.json(loginObject);
 });
 
 // Update endpoint
