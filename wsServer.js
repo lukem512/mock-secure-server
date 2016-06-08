@@ -36,7 +36,7 @@ function isOriginAllowed(origin) {
 // Ensure the AKID and signature are present
 // No validity checking is performed
 function isRequestWellFormatted(resourceURL) {
-  if (resourceURL.pathname == '/WebSocket/ConnectWebSocket') {
+  if (resourceURL.pathname == '/websocket/connectwebsocket') {
     if (!resourceURL.query.accessKeyID) {
       console.warn('[WS] parameter \'accessKeyID\' was not present in request');
       return false;
@@ -60,7 +60,6 @@ function isRequestWellFormatted(resourceURL) {
 };
 
 wsServer.on('request', function(req) {
-
   // Don't run origin tests in development
   if (SERVER_MODE === 'production') {
     if (!isOriginAllowed(req.origin)) {
@@ -83,7 +82,8 @@ wsServer.on('request', function(req) {
 
   // Respond to new connections with login data in JSON
   let loginData = fs.readFileSync('json/login.json', 'utf8');
-  connection.send(JSON.stringify(loginData));
+  let loginObject = JSON.parse(loginData);
+  connection.send(JSON.stringify(loginObject));
 
   // Periodically send push updates
   // TODO
