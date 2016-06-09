@@ -1,0 +1,16 @@
+{
+  "DataType": 1,
+  "Data": {
+    "SO": [
+      {
+        "SUC": false,
+        "ERR": [
+          {
+            "COD": "-848",
+            "VAL": "capability push"
+          }
+        ]
+      }
+    ]
+  }
+}
