@@ -24,6 +24,12 @@ var app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+// Logging middleware
+app.use('*', (req, res, next) => {
+  console.log('[HTTP] Request received', req.originalUrl);
+  next();
+});
+
 // Default message on GET
 app.get('/', (req, res) => {
   res.send('Mock Secure Server');
@@ -31,6 +37,8 @@ app.get('/', (req, res) => {
 
 // Login endpoint
 app.post('/user/login', (req, res) => {
+  console.log('[HTTP] Received login request');
+
   // Verify that username and password parameters are present
   let user = req.body.UserEMailID;
   if (!user || typeof user == 'undefined') { return res.status(400).send('Bad Request'); }
@@ -44,6 +52,7 @@ app.post('/user/login', (req, res) => {
 
 // Update endpoint
 app.post('/Gateway/UpdateDeviceData', (req, res) => {
+  console.log('[HTTP] Received UpdateDeviceData request');
 
   /*
     Expected format:
@@ -93,6 +102,7 @@ app.post('/Gateway/UpdateDeviceData', (req, res) => {
 
 // Fallback to 404
 app.use('*',  (req, res) => {
+  console.warn('[HTTP] Received unhandled request', req)
   res.status(404).send('Not Found');
 });
 

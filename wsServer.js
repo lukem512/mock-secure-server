@@ -14,7 +14,7 @@ var SERVER_MODE = process.env.mode || 'development';
 
 var ORIGIN_WHITELIST = ['localhost'];
 
-var PUSH_NOTIFICATION_INTERVAL = 4000;
+var PUSH_NOTIFICATION_INTERVAL = 30000;
 var CHECK_UPDATE_INTERVAL = 1000;
 
 // Push data
@@ -72,7 +72,7 @@ function checkForDeviceUdates() {
 
     // Check for the correct gateway
     let gddo = pushObject.Data.GDDO;
-    if (gddo.GMACID !== msg.GatewayMacId) { return console.warn('Unknown Gateway'); }
+    if (gddo.GMACID.toString() !== msg.GatewayMacId) { return console.warn('Unknown Gateway'); }
 
     // This dense block of code iterates through the
     // various arrays to find corresponding devices and parameters
