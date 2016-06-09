@@ -6,6 +6,8 @@ var fs = require('fs');
 var express = require('express');
 var bodyParser = require('body-parser');
 
+var q = require('./queue').q;
+
 var SERVER_HTTP_PORT = process.env.SERVER_HTTP_PORT || 8080;
 var SERVER_WS_PORT = process.env.SERVER_WS_PORT || 5678;
 
@@ -31,10 +33,10 @@ app.get('/', (req, res) => {
 app.post('/user/login', (req, res) => {
   // Verify that username and password parameters are present
   let user = req.body.UserEMailID;
-  if (!user || typeof user == 'undefined') { res.status(400).send('Bad Request'); return; }
+  if (!user || typeof user == 'undefined') { return res.status(400).send('Bad Request'); }
 
   let password = req.body.Password;
-  if (!password || typeof password == 'undefined') { res.status(400).send('Bad Request'); return; }
+  if (!password || typeof password == 'undefined') { return res.status(400).send('Bad Request'); }
 
   // Send hard-coded auth. keys
   res.json(loginObject);
@@ -42,7 +44,51 @@ app.post('/user/login', (req, res) => {
 
 // Update endpoint
 app.post('/Gateway/UpdateDeviceData', (req, res) => {
-  res.status(501).send('Not Implemented');
+
+  /*
+    Expected format:
+
+    {
+      "GatewayMacId": 11223344556677,
+      "DeviceData": {
+        "DRefID": 1,
+        "DPID": 1,
+        "DPDO": [{
+          "DPRefID": 112,
+          "CV": "200",
+          "LTU": "2016-04-20T08:22:08"
+        }]
+      }
+    }
+  */
+
+  // Check format
+  let mac = req.body.GatewayMacId;
+  if (!mac || typeof mac == 'undefined') { return res.status(400).send('Bad Request'); }
+
+  let dd = req.body.DeviceData;
+  if (!dd || typeof dd == 'undefined') { return res.status(400).send('Bad Request'); }
+  if (!dd.DRefID || typeof dd.DRefID == 'undefined') { return res.status(400).send('Bad Request'); }
+  if (!dd.DPID || typeof dd.DPID == 'undefined') { return res.status(400).send('Bad Request'); }
+
+  let dpdo = dd.DPDO;
+  if (!dpdo || typeof dpdo == 'undefined') { return res.status(400).send('Bad Request'); }
+
+  let failed = false;
+  dpdo.some(param => {
+    if (!param.DPRefID || typeof param.DPRefID == 'undefined') { failed = true; }
+    if (!param.CV || typeof param.CV == 'undefined') { failed = true; }
+    if (!param.LTU || typeof param.LTU == 'undefined') { failed = true; }
+    return !failed;
+  });
+  if (failed) { return res.status(400).send('Bad Request'); }
+
+  // Add the message to the queue
+  q.push(req.body);
+
+  // Respond with HTTP 200
+  // TODO: respond with 404 if device does not exist.
+  res.send();
 });
 
 // Fallback to 404

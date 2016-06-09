@@ -6,6 +6,8 @@ var http = require('http');
 var ws = require('websocket');
 var fs = require('fs');
 
+var q = require('./queue').q;
+
 // Configuration variables
 var SERVER_WS_PORT = process.env.SERVER_WS_PORT || 5678;
 var SERVER_MODE = process.env.mode || 'development';
@@ -13,6 +15,11 @@ var SERVER_MODE = process.env.mode || 'development';
 var ORIGIN_WHITELIST = ['localhost'];
 
 var PUSH_NOTIFICATION_INTERVAL = 4000;
+var CHECK_UPDATE_INTERVAL = 1000;
+
+// Push data
+let pushData = fs.readFileSync('json/push.json', 'utf8');
+let pushObject = JSON.parse(pushData);
 
 // HTTP server for WebSockets
 var httpServer = http.createServer((req, res) => {
@@ -41,16 +48,59 @@ function isOriginAllowed(origin) {
   }).length >  1);
 };
 
-function sendPushNotification() {
-  let pushData = fs.readFileSync('json/push.json', 'utf8');
-  let pushObject = JSON.parse(pushData);
-  let pushMessage = JSON.stringify(pushObject);
+function broadcastPushNotification() {
+  // Set LUT
+  // The format is "2016-04-20T08:22:08"
+  pushObject.Data.GDDO.LUT = new Date().toISOString();
 
+  // Convert to JSON and broadcast
+  let pushMessage = JSON.stringify(pushObject);
   connections.forEach(function(destination) {
     destination.send(pushMessage);
   });
+}
 
+function sendPushNotification() {
+  broadcastPushNotification();
   setTimeout(sendPushNotification, PUSH_NOTIFICATION_INTERVAL);
+};
+
+function checkForDeviceUdates() {
+  if (!q.isEmpty()) {
+    let msg = q.pop();
+    console.log('[WS] Retrieved update message');
+
+    // Check for the correct gateway
+    let gddo = pushObject.Data.GDDO;
+    if (gddo.GMACID !== msg.GatewayMacId) { return console.warn('Unknown Gateway'); }
+
+    // This dense block of code iterates through the
+    // various arrays to find corresponding devices and parameters
+    // before updating them
+    let now = new Date().toISOString();
+    gddo.ZNDS.forEach(zone => {
+      zone.DDDO.some(device => {
+        if (device.DRefID == msg.DeviceData.DRefID) {
+          device.DPDO.forEach(parameter => {
+            msg.DeviceData.DPDO.some(newParameter => {
+              if (parameter.DPRefID == newParameter.DPRefID) {
+                parameter.CV = newParameter.CV;
+                parameter.LUT = now;
+                return true;
+              }
+              return false;
+            })
+          })
+          return true;
+        }
+        return false;
+      })
+    });
+
+    // Broadcast the change
+    broadcastPushNotification();
+  }
+  setTimeout(checkForDeviceUdates, CHECK_UPDATE_INTERVAL);
 };
 
 // Ensure the AKID and signature are present
@@ -131,5 +181,8 @@ wsServer.on('request', function(req) {
 
 // Periodically send push updates
 setTimeout(sendPushNotification, PUSH_NOTIFICATION_INTERVAL);
+
+// Periodically check for update requests
+setTimeout(checkForDeviceUdates, CHECK_UPDATE_INTERVAL);
 
 module.exports.wsServer = wsServer;
