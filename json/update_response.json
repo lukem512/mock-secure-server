@@ -1,0 +1,9 @@
+{
+  "DPID": 64,
+  "DRefID": 1,
+  "GMACID": 11223344556677,
+  "PRSTA": [{"DPRefID": 301, "RPS": 0}],
+  "RQRID": 8577,
+  "RQS": -1,
+  "RQT": 0
+}
