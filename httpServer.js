@@ -15,8 +15,12 @@ var SERVER_WS_PORT = process.env.SERVER_WS_PORT || 5678;
 // These are hard-coded as the values are not currently
 // used for testing
 // Respond to new connections with login data in JSON
-let loginData = fs.readFileSync('json/login.json', 'utf8');
+let loginData = fs.readFileSync('./json/login.json', 'utf8');
 let loginObject = JSON.parse(loginData);
+
+// Correct response for device update method
+let updateResponseData = fs.readFileSync('./json/update_response.json', 'utf8');
+let updateResponseObject = JSON.parse(updateResponseData);
 
 // Instantiate the Express app
 // and support HTTP request variables
@@ -97,7 +101,7 @@ app.post('/Gateway/UpdateDeviceData', (req, res) => {
 
   // Respond with HTTP 200
   // TODO: respond with 404 if device does not exist.
-  res.send();
+  res.json(JSON.stringify(updateResponseObject));
 });
 
 // Fallback to 404

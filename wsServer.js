@@ -18,7 +18,7 @@ var PUSH_NOTIFICATION_INTERVAL = 30000;
 var CHECK_UPDATE_INTERVAL = 1000;
 
 // Push data
-let pushData = fs.readFileSync('json/push.json', 'utf8');
+let pushData = fs.readFileSync('./json/push.json', 'utf8');
 let pushObject = JSON.parse(pushData);
 
 // HTTP server for WebSockets
