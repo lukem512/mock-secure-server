@@ -12,6 +12,8 @@ var q = require('./queue').q;
 var SERVER_WS_PORT = process.env.SERVER_WS_PORT || 5678;
 var SERVER_MODE = process.env.mode || 'development';
 
+var SERVER_PERIODIC_PUSH_NOTIFICATIONS = process.env.SERVER_PERIODIC_PUSH_NOTIFICATIONS || false;
+
 var ORIGIN_WHITELIST = ['localhost'];
 
 var PUSH_NOTIFICATION_INTERVAL = 30000;
@@ -180,7 +182,9 @@ wsServer.on('request', function(req) {
 });
 
 // Periodically send push updates
-setTimeout(sendPushNotification, PUSH_NOTIFICATION_INTERVAL);
+if (SERVER_PERIODIC_PUSH_NOTIFICATIONS) {
+  setTimeout(sendPushNotification, PUSH_NOTIFICATION_INTERVAL);
+}
 
 // Periodically check for update requests
 setTimeout(checkForDeviceUdates, CHECK_UPDATE_INTERVAL);
