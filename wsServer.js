@@ -181,6 +181,11 @@ wsServer.on('request', function(req) {
   })
 });
 
+// Count the number of active connections
+function connectionCount() {
+  return connections.length;
+}
+
 // Periodically send push updates
 if (SERVER_PERIODIC_PUSH_NOTIFICATIONS) {
   setTimeout(sendPushNotification, PUSH_NOTIFICATION_INTERVAL);
@@ -190,3 +195,4 @@ if (SERVER_PERIODIC_PUSH_NOTIFICATIONS) {
 setTimeout(checkForDeviceUdates, CHECK_UPDATE_INTERVAL);
 
 module.exports.wsServer = wsServer;
+module.exports.connections = connectionCount;
