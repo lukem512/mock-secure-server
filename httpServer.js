@@ -6,6 +6,7 @@ var fs = require('fs');
 var express = require('express');
 var bodyParser = require('body-parser');
 
+var socket = require('node-socket-ipc');
 var q = require('./queue').q;
 
 var SERVER_HTTP_PORT = process.env.SERVER_HTTP_PORT || 8080;
@@ -49,6 +50,11 @@ app.post('/user/login', (req, res) => {
 
   let password = req.body.Password;
   if (!password || typeof password == 'undefined') { return res.status(400).send('Bad Request'); }
+
+  // Publish login message
+  socket.publish('login', {
+    email: req.body.UserEMailID
+  });
 
   // Send hard-coded auth. keys
   res.json(loginObject);
@@ -98,6 +104,9 @@ app.post('/Gateway/UpdateDeviceData', (req, res) => {
 
   // Add the message to the queue
   q.push(req.body);
+
+  // Send 'receive' message to listeners
+  socket.publish('receive', req.body);
 
   // Respond with HTTP 200
   // TODO: respond with 404 if device does not exist.

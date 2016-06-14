@@ -23,6 +23,7 @@
   "dependencies": {
     "body-parser": "^1.15.1",
     "express": "^4.13.4",
+    "node-socket-ipc": "github:lukem512/node-socket-ipc",
     "websocket": "^1.0.23"
   }
 }

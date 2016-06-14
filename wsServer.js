@@ -6,6 +6,7 @@ var http = require('http');
 var ws = require('websocket');
 var fs = require('fs');
 
+var socket = require('node-socket-ipc');
 var q = require('./queue').q;
 
 // Configuration variables
@@ -101,6 +102,9 @@ function checkForDeviceUdates() {
 
     // Broadcast the change
     broadcastPushNotification();
+
+    // Publish the change
+    socket.publish('send', pushObject);
   }
   setTimeout(checkForDeviceUdates, CHECK_UPDATE_INTERVAL);
 };

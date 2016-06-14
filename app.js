@@ -2,9 +2,9 @@
 
 // Mock Secure Server
 // Luke Mitchell, 03/06/2016
+console.log('Mock Secure Server is starting...');
+
 var httpServer = require('./httpServer');
 var wsServer = require('./wsServer');
-
-console.log('Mock Secure Server is starting...');
 
 module.exports.connections = wsServer.connections;
