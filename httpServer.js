@@ -31,7 +31,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Logging middleware
 app.use('*', (req, res, next) => {
-  console.log('[HTTP] Request received', req.originalUrl);
+  console.log('[SS][HTTP] Request received', req.originalUrl);
   next();
 });
 
@@ -42,7 +42,7 @@ app.get('/', (req, res) => {
 
 // Login endpoint
 app.post('/user/login', (req, res) => {
-  console.log('[HTTP] Received login request');
+  console.log('[SS][HTTP] Received login request');
 
   // Verify that username and password parameters are present
   let user = req.body.UserEMailID;
@@ -62,7 +62,7 @@ app.post('/user/login', (req, res) => {
 
 // Update endpoint
 app.post('/Gateway/UpdateDeviceData', (req, res) => {
-  console.log('[HTTP] Received UpdateDeviceData request');
+  console.log('[SS][HTTP] Received UpdateDeviceData request');
 
   /*
     Expected format:
@@ -115,13 +115,13 @@ app.post('/Gateway/UpdateDeviceData', (req, res) => {
 
 // Fallback to 404
 app.use('*',  (req, res) => {
-  console.warn('[HTTP] Received unhandled request', req)
+  console.warn('[SS][HTTP] Received unhandled request', req)
   res.status(404).send('Not Found');
 });
 
 // Listen at specified port
 app.listen(SERVER_HTTP_PORT, function () {
-  console.log('[HTTP] Listening at port ' + SERVER_HTTP_PORT);
+  console.log('[SS][HTTP] Listening at port ' + SERVER_HTTP_PORT);
 });
 
 module.exports.httpServer = app;

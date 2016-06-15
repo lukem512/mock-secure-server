@@ -26,13 +26,13 @@ let pushObject = JSON.parse(pushData);
 
 // HTTP server for WebSockets
 var httpServer = http.createServer((req, res) => {
-  console.log('[WS] Received request for ' + req.url);
+  console.log('[SS][WS] Received request for ' + req.url);
   res.writeHead(404);
   res.end('This connection is for WebSockets only');
 });
 
 httpServer.listen(SERVER_WS_PORT, function() {
-  console.log('[WS] Listening at port ' + SERVER_WS_PORT);
+  console.log('[SS][WS] Listening at port ' + SERVER_WS_PORT);
 });
 
 // WebSocket server
@@ -71,11 +71,11 @@ function sendPushNotification() {
 function checkForDeviceUdates() {
   if (!q.isEmpty()) {
     let msg = q.pop();
-    console.log('[WS] Retrieved update message');
+    console.log('[SS][WS] Retrieved update message');
 
     // Check for the correct gateway
     let gddo = pushObject.Data.GDDO;
-    if (gddo.GMACID.toString() !== msg.GatewayMacId) { return console.warn('Unknown Gateway'); }
+    if (gddo.GMACID.toString() !== msg.GatewayMacId) { return console.warn('[SS][WS] Unknown Gateway'); }
 
     // This dense block of code iterates through the
     // various arrays to find corresponding devices and parameters
@@ -114,24 +114,24 @@ function checkForDeviceUdates() {
 function isRequestWellFormatted(resourceURL) {
   if (resourceURL.pathname == '/websocket/connectwebsocket') {
     if (!resourceURL.query.accessKeyID) {
-      console.warn('[WS] parameter \'accessKeyID\' was not present in request');
+      console.warn('[SS][WS] parameter \'accessKeyID\' was not present in request');
       return false;
     }
 
     if (!resourceURL.query.authorization) {
-      console.warn('[WS] parameter \'authorization\' was not present in request');
+      console.warn('[SS][WS] parameter \'authorization\' was not present in request');
       return false;
     }
 
     if (!resourceURL.query.date) {
-      console.warn('[WS] parameter \'date\' was not present in request');
+      console.warn('[SS][WS] parameter \'date\' was not present in request');
       return false;
     }
 
     return true;
   }
 
-  console.warn('[WS] request url was incorrect');
+  console.warn('[SS][WS] request url was incorrect');
   return false;
 };
 
@@ -139,7 +139,7 @@ wsServer.on('request', function(req) {
   // Don't run origin tests in development
   if (SERVER_MODE === 'production') {
     if (!isOriginAllowed(req.origin)) {
-      console.log('[WS] Connection from ' + req.origin + ' rejected');
+      console.log('[SS][WS] Connection from ' + req.origin + ' rejected');
       req.reject();
       return;
     }
@@ -147,14 +147,14 @@ wsServer.on('request', function(req) {
 
   // Check path and query variables
   if (!isRequestWellFormatted(req.resourceURL)) {
-    console.log('[WS] Connection from  ' + req.origin + ' is not well-formatted and was rejected');
+    console.log('[SS][WS] Connection from  ' + req.origin + ' is not well-formatted and was rejected');
     req.reject();
     return;
   }
 
   // Accept the request!
   var connection = req.accept(null, req.origin);
-  console.log('[WS] Connection from ' + connection.remoteAddress + ' accepted');
+  console.log('[SS][WS] Connection from ' + connection.remoteAddress + ' accepted');
 
   // Add to list
   connections.push(connection);
@@ -171,11 +171,11 @@ wsServer.on('request', function(req) {
       payload = msg.binaryData.length + ' bytes';
       break;
     }
-    console.log('[WS] Message received from ' + connection.remoteAddress + ': ' + payload);
+    console.log('[SS][WS] Message received from ' + connection.remoteAddress + ': ' + payload);
   });
 
   connection.on('close', function(reason, description) {
-    console.log('[WS] Connection from ' + connection.remoteAddress + ' closed');
+    console.log('[SS][WS] Connection from ' + connection.remoteAddress + ' closed');
 
     // Remove from list
     var index = connections.indexOf(connection);
