@@ -12,6 +12,8 @@ var q = require('./queue').q;
 var SERVER_HTTP_PORT = process.env.SERVER_HTTP_PORT || 8080;
 var SERVER_WS_PORT = process.env.SERVER_WS_PORT || 5678;
 
+let LOG_PREFIX = process.env.LOG_PREFIX || '[SS]';
+
 // Authorization keys to use as request responses
 // These are hard-coded as the values are not currently
 // used for testing
@@ -31,7 +33,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Logging middleware
 app.use('*', (req, res, next) => {
-  console.log('[SS][HTTP] Request received', req.originalUrl);
+  console.log(LOG_PREFIX + '[HTTP] Request received', req.originalUrl);
   next();
 });
 
@@ -42,7 +44,7 @@ app.get('/', (req, res) => {
 
 // Login endpoint
 app.post('/user/login', (req, res) => {
-  console.log('[SS][HTTP] Received login request');
+  console.log(LOG_PREFIX + '[HTTP] Received login request');
 
   // Verify that username and password parameters are present
   let user = req.body.UserEMailID;
@@ -62,7 +64,7 @@ app.post('/user/login', (req, res) => {
 
 // Update endpoint
 app.post('/Gateway/UpdateDeviceData', (req, res) => {
-  console.log('[SS][HTTP] Received UpdateDeviceData request');
+  console.log(LOG_PREFIX + '[HTTP] Received UpdateDeviceData request');
 
   /*
     Expected format:
@@ -115,13 +117,13 @@ app.post('/Gateway/UpdateDeviceData', (req, res) => {
 
 // Fallback to 404
 app.use('*',  (req, res) => {
-  console.warn('[SS][HTTP] Received unhandled request', req)
+  console.warn(LOG_PREFIX + '[HTTP] Received unhandled request', req)
   res.status(404).send('Not Found');
 });
 
 // Listen at specified port
 app.listen(SERVER_HTTP_PORT, function () {
-  console.log('[SS][HTTP] Listening at port ' + SERVER_HTTP_PORT);
+  console.log(LOG_PREFIX + '[HTTP] Listening at port ' + SERVER_HTTP_PORT);
 });
 
 module.exports.httpServer = app;
