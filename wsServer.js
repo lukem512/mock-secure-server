@@ -15,6 +15,7 @@ var SERVER_MODE = process.env.mode || 'development';
 
 var SERVER_PERIODIC_PUSH_NOTIFICATIONS = process.env.SERVER_PERIODIC_PUSH_NOTIFICATIONS || false;
 
+var ORIGIN_CHECK_ENABLED = process.env.ORIGIN_CHECK_ENABLED || false;
 var ORIGIN_WHITELIST = ['localhost'];
 
 var PUSH_NOTIFICATION_INTERVAL = 30000;
@@ -139,7 +140,7 @@ function isRequestWellFormatted(resourceURL) {
 
 wsServer.on('request', function(req) {
   // Don't run origin tests in development
-  if (SERVER_MODE === 'production') {
+  if (SERVER_MODE === 'production' && ORIGIN_CHECK_ENABLED) {
     if (!isOriginAllowed(req.origin)) {
       console.log(LOG_PREFIX + '[WS] Connection from ' + req.origin + ' rejected');
       req.reject();
