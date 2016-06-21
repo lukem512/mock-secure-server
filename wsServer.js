@@ -76,7 +76,7 @@ function sendPushNotification() {
 function checkForDeviceUdates() {
   if (!q.isEmpty()) {
     let msg = q.pop();
-    console.log(LOG_PREFIX + '[WS] Retrieved update message', msg);
+    console.log(LOG_PREFIX + '[WS] Retrieved update message', JSON.stringify(msg));
 
     // Check for the correct gateway
     let gddo = pushObject.Data.GDDO;
@@ -106,8 +106,6 @@ function checkForDeviceUdates() {
         return false;
       })
     });
-
-    console.log(LOG_PREFIX + '[WS] About to broadcast');
 
     // Broadcast the change
     broadcastPushNotification();
