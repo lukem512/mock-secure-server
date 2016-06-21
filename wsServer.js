@@ -55,6 +55,8 @@ function isOriginAllowed(origin) {
 };
 
 function broadcastPushNotification() {
+  console.log(LOG_PREFIX + '[WS] Sending push notification');
+
   // Set LUT
   // The format is "2016-04-20T08:22:08"
   pushObject.Data.GDDO.LUT = new Date().toISOString();
@@ -90,6 +92,7 @@ function checkForDeviceUdates() {
           device.DPDO.forEach(parameter => {
             msg.DeviceData.DPDO.some(newParameter => {
               if (parameter.DPRefID == newParameter.DPRefID) {
+                console.log(LOG_PREFIX + '[WS] Setting current value to ' + newParameter.CV);
                 parameter.CV = newParameter.CV;
                 parameter.LUT = now;
                 return true;
