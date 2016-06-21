@@ -76,7 +76,7 @@ function sendPushNotification() {
 function checkForDeviceUdates() {
   if (!q.isEmpty()) {
     let msg = q.pop();
-    console.log(LOG_PREFIX + '[WS] Retrieved update message');
+    console.log(LOG_PREFIX + '[WS] Retrieved update message', msg);
 
     // Check for the correct gateway
     let gddo = pushObject.Data.GDDO;
@@ -85,13 +85,14 @@ function checkForDeviceUdates() {
     // This dense block of code iterates through the
     // various arrays to find corresponding devices and parameters
     // before updating them
+    // TODO - find the goddam bug.
     let now = new Date().toISOString();
     gddo.ZNDS.forEach(zone => {
       zone.DDDO.some(device => {
-        if (device.DRefID == msg.DeviceData.DRefID) {
+        if (device.DRefID.toString() == msg.DeviceData.DRefID.toString()) {
           device.DPDO.forEach(parameter => {
             msg.DeviceData.DPDO.some(newParameter => {
-              if (parameter.DPRefID == newParameter.DPRefID) {
+              if (parameter.DPRefID.toString() == newParameter.DPRefID.toString()) {
                 console.log(LOG_PREFIX + '[WS] Setting current value to ' + newParameter.CV);
                 parameter.CV = newParameter.CV;
                 parameter.LUT = now;
@@ -105,6 +106,8 @@ function checkForDeviceUdates() {
         return false;
       })
     });
+
+    console.log(LOG_PREFIX + '[WS] About to broadcast');
 
     // Broadcast the change
     broadcastPushNotification();
