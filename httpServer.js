@@ -92,8 +92,7 @@ app.get('/Gateway/GatewayData', (req, res) => {
     "GCS": gcs,
     "GMACID": 46477239136298,
     "LUT": "2016-04-14T12:15:38.335",
-    "ZNDS": null
-    ],
+    "ZNDS": null,
     "GN": "IodicusGateway"
   })
 });
