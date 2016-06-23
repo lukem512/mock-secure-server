@@ -62,6 +62,42 @@ app.post('/user/login', (req, res) => {
   res.json(loginObject);
 });
 
+// Gateway list endpoint
+app.get('/user/GatewayList', (req, res) => {
+  console.log(LOG_PREFIX + '[HTTP] Received GatewayList request');
+
+  // TODO - use fixtures/otherwise
+  res.json([{
+    "GN": "IodicusGateway",
+    "RID": 2,
+    "GSN": "UOB00010",
+    "GMACID": 46477239136298
+  }])
+});
+
+
+// Gateway data endpoint
+app.get('/Gateway/GatewayData', (req, res) => {
+  console.log(LOG_PREFIX + '[HTTP] Received GatewayData request');
+
+  // TODO - query variables
+  console.log(req.body.gatewayMACID, req.body.lastupdatetime)
+
+  // 80% chance that the gateway is online
+  let random_num = Math.floor(Math.random() * 10);
+  let gcs = (random_num > 8) ? "1" : "0";
+
+  // TODO - use fixtures/otherwise
+  res.json({
+    "GCS": gcs,
+    "GMACID": 46477239136298,
+    "LUT": "2016-04-14T12:15:38.335",
+    "ZNDS": null
+    ],
+    "GN": "IodicusGateway"
+  })
+});
+
 // Update endpoint
 app.post('/Gateway/UpdateDeviceData', (req, res) => {
   console.log(LOG_PREFIX + '[HTTP] Received UpdateDeviceData request');
