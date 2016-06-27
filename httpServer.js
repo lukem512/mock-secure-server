@@ -98,7 +98,7 @@ app.get('/Gateway/GatewayData', (req, res) => {
 
   // Ensure query variables are present
   let query = url.parse(req.url,true).query;
-  
+
   if (!query.gatewayMACID) {
     console.warn(LOG_PREFIX + '[HTTP] No GMACID specified. The URL should be in the form /Gateway/GatewayData?gatewayMACID=HEX_GMACID&lastupdatetime="ISO_DATETIME_STRING"');
     return badRequest(res, 'No gatewayMACID specified');
@@ -111,7 +111,7 @@ app.get('/Gateway/GatewayData', (req, res) => {
 
   // 80% chance that the gateway is online
   let random_num = Math.floor(Math.random() * 10);
-  let gcs = (random_num > 8) ? "1" : "0";
+  let gcs = (random_num < 8) ? "1" : "0";
 
   // Create date string
   let lut = new Date().toISOString();
