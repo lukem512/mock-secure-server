@@ -5,6 +5,7 @@
 var fs = require('fs');
 var express = require('express');
 var bodyParser = require('body-parser');
+var url = require('url');
 
 var socket = require('node-socket-ipc');
 var q = require('./queue').q;
@@ -24,6 +25,20 @@ let loginObject = JSON.parse(loginData);
 // Correct response for device update method
 let updateResponseData = fs.readFileSync(__dirname + '/json/update_response.json', 'utf8');
 let updateResponseObject = JSON.parse(updateResponseData);
+
+function badRequest(res, message) {
+  return res.status(400).json({
+    err: 'Bad Request',
+    message
+  });
+};
+
+function notFound(res, message) {
+  return res.status(404).json({
+    err: 'Not Found',
+    message
+  });
+}
 
 // Instantiate the Express app
 // and support HTTP request variables
@@ -67,11 +82,12 @@ app.get('/user/GatewayList', (req, res) => {
   console.log(LOG_PREFIX + '[HTTP] Received GatewayList request');
 
   // TODO - use fixtures/otherwise
+  // I AM HERE
   res.json([{
-    "GN": "IodicusGateway",
+    "GN": "TestGateway",
     "RID": 2,
-    "GSN": "UOB00010",
-    "GMACID": 46477239136298
+    "GSN": "TestSite",
+    "GMACID": 11223344556677
   }])
 });
 
@@ -80,20 +96,36 @@ app.get('/user/GatewayList', (req, res) => {
 app.get('/Gateway/GatewayData', (req, res) => {
   console.log(LOG_PREFIX + '[HTTP] Received GatewayData request');
 
-  // TODO - query variables
-  console.log(req.body.gatewayMACID, req.body.lastupdatetime)
+  // Ensure query variables are present
+  let query = url.parse(req.url,true).query;
+  
+  if (!query.gatewayMACID) {
+    console.warn(LOG_PREFIX + '[HTTP] No GMACID specified. The URL should be in the form /Gateway/GatewayData?gatewayMACID=HEX_GMACID&lastupdatetime="ISO_DATETIME_STRING"');
+    return badRequest(res, 'No gatewayMACID specified');
+  }
+
+  if (!query.lastupdatetime) {
+    console.warn(LOG_PREFIX + '[HTTP] No last update time specified. The URL should be in the form /Gateway/GatewayData?gatewayMACID=HEX_GMACID&lastupdatetime="ISO_DATETIME_STRING"');
+    return badRequest(res, 'No lastupdatetime specified');
+  }
 
   // 80% chance that the gateway is online
   let random_num = Math.floor(Math.random() * 10);
   let gcs = (random_num > 8) ? "1" : "0";
 
+  // Create date string
+  let lut = new Date().toISOString();
+
   // TODO - use fixtures/otherwise
   res.json({
-    "GCS": gcs,
-    "GMACID": 46477239136298,
-    "LUT": "2016-04-14T12:15:38.335",
-    "ZNDS": null,
-    "GN": "IodicusGateway"
+    "GDDO": {
+      "ZNDS": null,
+      "GMACID": 11223344556677,
+      "GCS": gcs,
+      "LUT": lut,
+      "GN": "TestGateway"
+    },
+    "ALMS": []
   })
 });
 
@@ -120,15 +152,15 @@ app.post('/Gateway/UpdateDeviceData', (req, res) => {
 
   // Check format
   let mac = req.body.GatewayMacId;
-  if (!mac || typeof mac == 'undefined') { return res.status(400).send('Bad Request'); }
+  if (!mac || typeof mac == 'undefined') { return badRequest(res, 'No GatewayMacId specified'); }
 
   let dd = req.body.DeviceData;
-  if (!dd || typeof dd == 'undefined') { return res.status(400).send('Bad Request'); }
-  if (!dd.DRefID || typeof dd.DRefID == 'undefined') { return res.status(400).send('Bad Request'); }
-  if (!dd.DPID || typeof dd.DPID == 'undefined') { return res.status(400).send('Bad Request'); }
+  if (!dd || typeof dd == 'undefined') { return badRequest(res, 'No DeviceData specified'); }
+  if (!dd.DRefID || typeof dd.DRefID == 'undefined') { return badRequest(res, 'No DRefID specified'); }
+  if (!dd.DPID || typeof dd.DPID == 'undefined') { return badRequest(res, 'No DPID specified'); }
 
   let dpdo = dd.DPDO;
-  if (!dpdo || typeof dpdo == 'undefined') { return res.status(400).send('Bad Request'); }
+  if (!dpdo || typeof dpdo == 'undefined') { return badRequest(res, 'No DPDO specified'); }
 
   let failed = false;
   dpdo.some(param => {
@@ -137,7 +169,9 @@ app.post('/Gateway/UpdateDeviceData', (req, res) => {
     if (!param.LTU || typeof param.LTU == 'undefined') { failed = true; }
     return !failed;
   });
-  if (failed) { return res.status(400).send('Bad Request'); }
+  if (failed) {
+    return badRequest(res, 'Bad DPDO specifation');
+  }
 
   // Add the message to the queue
   q.push(req.body);
@@ -153,7 +187,7 @@ app.post('/Gateway/UpdateDeviceData', (req, res) => {
 // Fallback to 404
 app.use('*',  (req, res) => {
   console.warn(LOG_PREFIX + '[HTTP] Received unhandled request', req)
-  res.status(404).send('Not Found');
+  return notFound(res, 'The requested resource was not found');
 });
 
 // Listen at specified port
